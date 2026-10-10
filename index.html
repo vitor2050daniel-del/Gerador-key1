@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VITINHO MODZ — Gerador de Key</title>
+  <style>
+    :root {
+      --bg: #0a0a12;
+      --card: #12121c;
+      --red: #e91e40;
+      --blue: #4da3ff;
+      --purple: #9b4dff;
+      --text: #f0f0f5;
+      --muted: #8a8a9a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: radial-gradient(ellipse at 30% 20%, #1a1030 0%, var(--bg) 55%),
+                  radial-gradient(ellipse at 80% 80%, #301018 0%, transparent 50%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border-radius: 18px;
+      padding: 28px 24px 32px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+    }
+    h1 {
+      margin: 0 0 4px;
+      font-size: 1.5rem;
+      text-align: center;
+      color: var(--red);
+      letter-spacing: 0.04em;
+    }
+    .sub {
+      text-align: center;
+      color: var(--blue);
+      font-size: 0.85rem;
+      margin-bottom: 22px;
+      font-weight: 600;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .key-box {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: #0c0c14;
+      color: #ffe066;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    button {
+      flex: 1;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.12s, filter 0.12s;
+    }
+    button:active { transform: scale(0.97); }
+    .btn-gen { background: linear-gradient(135deg, var(--purple), #6b2fd6); }
+    .btn-copy { background: linear-gradient(135deg, var(--blue), #2563c7); }
+    .btn-multi { background: linear-gradient(135deg, var(--red), #b01030); width: 100%; margin-top: 4px; }
+    .hint {
+      margin-top: 18px;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: var(--muted);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 14px;
+    }
+    .hint strong { color: #ccc; }
+    .ok {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #5dffa0;
+      min-height: 1.2em;
+      margin-bottom: 8px;
+    }
+    .list {
+      margin-top: 12px;
+      max-height: 140px;
+      overflow: auto;
+      font-family: ui-monospace, monospace;
+      font-size: 0.8rem;
+      color: #c8c8d0;
+      background: #0c0c14;
+      border-radius: 8px;
+      padding: 10px;
+      display: none;
+    }
+    .list.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>VITINHO MODZ</h1>
+    <div class="sub">GERADOR DE KEY ONLINE</div>
+
+    <label>Sua key</label>
+    <div class="key-box" id="keyOut">— toque em GERAR —</div>
+    <div class="ok" id="msg"></div>
+
+    <div class="row">
+      <button type="button" class="btn-gen" onclick="gerarUma()">GERAR KEY</button>
+      <button type="button" class="btn-copy" onclick="copiar()">COPIAR</button>
+    </div>
+    <button type="button" class="btn-multi" onclick="gerarVarias(5)">GERAR 5 KEYS</button>
+
+    <div class="list" id="lista"></div>
+
+    <div class="hint">
+      <strong>Como usar no mod:</strong><br>
+      1) Gere e copie a key<br>
+      2) O dono adiciona a key no arquivo <strong>keys.txt</strong> do GitHub<br>
+      3) No jogo: <strong>COLAR</strong> → <strong>ATIVAR KEY</strong><br><br>
+      Key só libera depois de estar no <strong>keys.txt</strong> (lista online).
+    </div>
+  </div>
+
+  <script>
+    const HEX = "0123456789ABCDEF";
+    function rnd() {
+      const a = new Uint32Array(1);
+      crypto.getRandomValues(a);
+      return a[0];
+    }
+    function makeKey() {
+      let k = "VITINHO-";
+      for (let i = 0; i < 4; i++) k += HEX[rnd() % 16];
+      k += "-";
+      for (let i = 0; i < 4; i++) k += HEX[rnd() % 16];
+      return k;
+    }
+    let atual = "";
+    function gerarUma() {
+      atual = makeKey();
+      document.getElementById("keyOut").textContent = atual;
+      document.getElementById("msg").textContent = "Key gerada!";
+      document.getElementById("lista").classList.remove("show");
+    }
+    function copiar() {
+      if (!atual) { document.getElementById("msg").textContent = "Gere uma key antes"; return; }
+      navigator.clipboard.writeText(atual).then(() => {
+        document.getElementById("msg").textContent = "Copiada!";
+      }).catch(() => {
+        document.getElementById("msg").textContent = "Selecione e copie manualmente";
+      });
+    }
+    function gerarVarias(n) {
+      const arr = [];
+      for (let i = 0; i < n; i++) arr.push(makeKey());
+      atual = arr[0];
+      document.getElementById("keyOut").textContent = atual;
+      const el = document.getElementById("lista");
+      el.textContent = arr.join("\n");
+      el.classList.add("show");
+      document.getElementById("msg").textContent = n + " keys — a primeira está no campo";
+      navigator.clipboard.writeText(arr.join("\n")).catch(() => {});
+    }
+  </script>
+</body>
+</html>
